@@ -35,7 +35,7 @@ authorSchema
 authorSchema
   .virtual("url")
   .get(function () {
-    return "/catalog/author/" + this._id;
+    return "/api/library/author/" + this._id;
   });
 
 // Export model

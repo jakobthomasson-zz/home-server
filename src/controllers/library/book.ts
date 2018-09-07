@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import async from "async";
 
 import { default as Author, AuthorModel } from "../../models/library/Author";
@@ -32,13 +32,48 @@ export const index = (req: Request, res: Response) => {
 };
 
 // Display list of all books.
-export const book_list = (req: Request, res: Response) => {
-  res.send("NOT IMPLEMENTED: Book list");
+export const book_list = (req: Request, res: Response, next: NextFunction) => {
+  Book
+    .find({}, "title author")
+    .populate("author")
+    .exec((err: any, result: BookModel[]) => {
+      if (err) {
+        return next(err);
+      }
+      res.render("api/library/book_list", { title: "Book List", book_list: result });
+    });
 };
 
+
+
 // Display detail page for a specific book.
-export const book_detail = (req: Request, res: Response) => {
-  res.send("NOT IMPLEMENTED: Book detail: " + req.params.id);
+export const book_detail = (req: Request, res: Response, next: NextFunction) => {
+  async.parallel({
+    book: (callback: (err: any, result: BookModel) => void) => {
+      Book
+        .findById(req.params.id)
+        .populate("genre")
+        .exec(callback);
+    },
+    book_instances: (callback: (err: any, result: BookInstanceModel) => void) => {
+      BookInstance
+        .find({ "book": req.params.id })
+        .exec(callback);
+    }
+  },
+    (err: any, result: { book: BookModel, book_instances: BookInstanceModel }) => {
+      if (err) {
+        return next(err);
+      }
+      if (result.book === null) {
+        err = new Error("Book not found");
+        err.status = 404;
+        return next(err);
+      }
+
+      res.render("api/library/book_detail", { title: "Title", ...result });
+
+    });
 };
 
 // Display book create form on GET.

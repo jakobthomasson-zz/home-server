@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-
+import { AuthorModel } from "./Author";
 export type BookModel = mongoose.Document & {
   title: string,
   summary: string,
   isbn: string,
-  author: any, // TODO: vet inte hur denna ska va
+  author: AuthorModel, // TODO: vet inte hur denna ska va
   genre: any, // TODO: hur?
 };
 
@@ -22,7 +22,7 @@ const bookSchema = new mongoose.Schema(
 bookSchema
   .virtual("url")
   .get(function () {
-    return "/catalog/book/" + this._id;
+    return "/api/library/book/" + this._id;
   });
 
 // Export model

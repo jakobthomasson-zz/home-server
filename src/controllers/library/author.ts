@@ -1,6 +1,7 @@
 import { default as Author, AuthorModel } from "../../models/library/Author";
 import { Request, Response, NextFunction } from "express";
-const async = require("async");
+import async from "async";
+import Book, { BookModel } from "../../models/library/Book";
 
 // Display list of all Authors.
 export const author_list = (req: Request, res: Response, next: NextFunction) => {
@@ -19,8 +20,32 @@ export const author_list = (req: Request, res: Response, next: NextFunction) => 
 };
 
 
-export const author_detail = (req: Request, res: Response) => {
-  res.send("NOT IMPLEMENTED: Author detail " + req.params.id);
+export const author_detail = (req: Request, res: Response, next: NextFunction) => {
+
+  async.parallel({
+    author: (callback: (err: any, result: AuthorModel) => void) => {
+      Author
+        .findById(req.params.id)
+        .exec(callback);
+    },
+    author_books: (callback: (err: any, result: BookModel[]) => void) => {
+      Book
+        .find({ "author": req.params.id })
+        .exec(callback);
+    }
+  },
+  (err: any, result: { author: AuthorModel, author_books: BookModel[] }) => {
+    if (err) {
+      next(err);
+    }
+    if (result.author === null) {
+      err = new Error("Author not found");
+      err.status = 404;
+      return next(err);
+    }
+
+    res.render("api/library/author_detail", { title: "Author detail", ...result });
+  });
 };
 
 // // Display detail page for a specific Author.

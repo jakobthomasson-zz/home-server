@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import moment from "moment";
 
 export type BookInstanceModel = mongoose.Document & {
   book: any, // TODO:
@@ -23,7 +23,13 @@ const bookInstanceSchema = new mongoose.Schema(
 bookInstanceSchema
   .virtual("url")
   .get(function () {
-    return "/catalog/bookinstance/" + this._id;
+    return "/api/library/bookinstance/" + this._id;
+  });
+
+bookInstanceSchema
+  .virtual("due_back_formatted")
+  .get(function () {
+    return moment(this.due_back).format("MMMM Do, YYYY");
   });
 
 

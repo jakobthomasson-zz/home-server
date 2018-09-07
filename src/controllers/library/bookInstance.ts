@@ -1,14 +1,36 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { default as BookInstance, BookInstanceModel } from "../../models/library/BookInstance";
 
 // Display list of all BookInstances.
-export const bookinstance_list = (req: Request, res: Response) => {
-  res.send("NOT IMPLEMENTED: BookInstance list");
+export const bookinstance_list = (req: Request, res: Response, next: NextFunction) => {
+  BookInstance
+    .find()
+    .populate("book")
+    .exec(function (err: any, result: BookInstanceModel[]) {
+      if (err) { return next(err); }
+      // Successful, so render
+      res.render("api/library/bookinstance_list", { title: "Book Instance List", bookinstance_list: result });
+    });
 };
 
 // Display detail page for a specific BookInstance.
-export const bookinstance_detail = (req: Request, res: Response) => {
-  res.send("NOT IMPLEMENTED: BookInstance detail: " + req.params.id);
+export const bookinstance_detail = (req: Request, res: Response, next: NextFunction) => {
+  BookInstance
+    .findById(req.params.id)
+    .populate("book")
+    .exec((err: any, result: BookInstanceModel) => {
+      if (err) {
+        return next(err);
+      }
+      if (result === null) {
+        err = new Error("Book copy not found");
+        err.status = 404;
+        return next(err);
+      }
+
+      res.render("api/library/bookinstance_detail", { title: "Book", bookinstance: result });
+
+    });
 };
 
 // Display BookInstance create form on GET.
