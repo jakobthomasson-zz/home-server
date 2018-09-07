@@ -1,0 +1,38 @@
+extends ../../layout
+
+block content
+  div.page-header
+    h2
+      i.fa.fa-book(style='color: #335397')
+      | Library API
+  div(class='container-fluid')
+      div(class='row')
+        div(class='col-sm-2')
+          block sidebar
+            ul(class='sidebar-nav')
+              li 
+                a(href='/api/library') Home
+              li 
+                a(href='/api/library/books') All books
+              li 
+                a(href='/api/library/authors') All authors
+              li 
+                a(href='/api/library/genres') All genres
+              li 
+                a(href='/api/library/bookinstances') All book-instances
+              li 
+                hr
+              li 
+                a(href='/api/library/author/create') Create new author
+              li 
+                a(href='/api/library/genre/create') Create new genre
+              li 
+                a(href='/api/library/book/create') Create new book
+              li 
+                a(href='/api/library/bookinstance/create') Create new book instance (copy)
+                
+        div(class='col-sm-10')
+          block content
+      
+
+
