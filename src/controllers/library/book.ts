@@ -1,72 +1,72 @@
-// import { Request, Response } from "express";
-// import Book from "../models/book";
+import { Request, Response } from "express";
+import async from "async";
 
-// // import * as async from 'async';
+import { default as Author, AuthorModel } from "../../models/library/Author";
+import { default as Book, BookModel } from "../../models/library/Book";
+import { default as BookInstance, BookInstanceModel } from "../../models/library/BookInstance";
+import { default as Genre, GenreModel } from "../../models/library/Genre";
 
-// // exports.index = function (req: Request, res: Response) {
-// //   async.parallel(
-// //     {
-// //       book_count(callback) {
-// //         Book.countDocuments({}, callback); // Pass an empty object as match condition to find all documents of this collection
-// //       },
-// //     },
-// //     (err, results) => {
-// //       res.render('index', {
-// //         title: 'Local Library Home',
-// //         error: err,
-// //         data: results,
-// //       });
-// //     },
-// //   );
-// // };
+export const index = (req: Request, res: Response) => {
+  async.parallel(
+    {
+      author_count: (callback: (err: any, result: any) => void) => {
+        Author.count({}, callback);
+      },
+      book_count: (callback: (err: any, result: any) => void) => {
+        Book.count({}, callback);
+      },
+      book_instance_count: (callback: (err: any, result: any) => void) => {
+        BookInstance.count({}, callback);
+      },
+      author_book_instance_available_count: (callback: (err: any, result: any) => void) => {
+        BookInstance.count({ status: "Available" }, callback);
+      },
+      genre_count: (callback: (err: any, result: any) => void) => {
+        Genre.count({}, callback);
+      },
+    },
+    (err: any, result: any) => {
+      console.log(result);
+      res.render("api/library/index", { title: "Local Library Home", error: err, data: result });
+    });
+};
 
-// export let allBooks = (req: Request, res: Response) => {
-//   Book.find((err: any, books: any) => {
-//     if (err) {
-//       res.send(err);
-//     } else {
-//       res.send(books);
-//     }
-//   });
-// };
+// Display list of all books.
+export const book_list = (req: Request, res: Response) => {
+  res.send("NOT IMPLEMENTED: Book list");
+};
 
-// export let getBook = (req: Request, res: Response) => {
-//   Book.findById(req.params.id, (err: any, book: any) => {
-//     if (err) {
-//       res.send(err);
-//     } else {
-//       res.send(book);
-//     }
-//   });
-// };
+// Display detail page for a specific book.
+export const book_detail = (req: Request, res: Response) => {
+  res.send("NOT IMPLEMENTED: Book detail: " + req.params.id);
+};
 
-// export let addBook = (req: Request, res: Response) => {
-//   const book = new Book(req.body);
-//   book.save((err: any) => {
-//     if (err) {
-//       res.send(err);
-//     } else {
-//       res.send(book);
-//     }
-//   });
-// };
+// Display book create form on GET.
+export const book_create_get = (req: Request, res: Response) => {
+  res.send("NOT IMPLEMENTED: Book create GET");
+};
 
-// export let deleteBook = (req: Request, res: Response) => {
-//   Book.deleteOne({ _id: req.params.id }, (err: any) => {
-//     if (err) {
-//       res.send(err);
-//     } else {
-//       res.send("Successfully deleted the book");
-//     }
-//   });
-// };
+// Handle book create on POST.
+export const book_create_post = (req: Request, res: Response) => {
+  res.send("NOT IMPLEMENTED: Book create POST");
+};
 
-// export let updateBook = (req: Request, res: Response) => {
-//   Book.findByIdAndUpdate(req.params.id, req.body, (err: any, book: any) => {
-//     if (err) {
-//       res.send(err);
-//     } else {
-//       res.send("Successfully updated the book");
-//     }
-//   });
-// };
+// Display book delete form on GET.
+export const book_delete_get = (req: Request, res: Response) => {
+  res.send("NOT IMPLEMENTED: Book delete GET");
+};
+
+// Handle book delete on POST.
+export const book_delete_post = (req: Request, res: Response) => {
+  res.send("NOT IMPLEMENTED: Book delete POST");
+};
+
+// Display book update form on GET.
+export const book_update_get = (req: Request, res: Response) => {
+  res.send("NOT IMPLEMENTED: Book update GET");
+};
+
+// Handle book update on POST.
+export const book_update_post = (req: Request, res: Response) => {
+  res.send("NOT IMPLEMENTED: Book update POST");
+};

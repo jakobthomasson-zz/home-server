@@ -33,8 +33,8 @@ export let getFacebook = (req: Request, res: Response, next: NextFunction) => {
  * GET /api/library
  * Library API example.
  */
-export let getLibrary = (req: Request, res: Response, next: NextFunction) => {
-  res.render("api/library/layout", {
-    title: "Library API",
-  });
-};
+// export let getLibrary = (req: Request, res: Response, next: NextFunction) => {
+//   res.render("api/library/layout", {
+//     title: "Library API",
+//   });
+// };

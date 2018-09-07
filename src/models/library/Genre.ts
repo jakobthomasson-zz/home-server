@@ -14,4 +14,5 @@ genreSchema.virtual("url").get(function () {
 });
 
 // Export model
-module.exports = mongoose.model("Genre", genreSchema);
+const Genre = mongoose.model("Genre", genreSchema);
+export default Genre;

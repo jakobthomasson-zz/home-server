@@ -21,13 +21,6 @@ import apiRouter from "./routes/api";
 // Load environment variables from .env file, where API keys and passwords are configured
 dotenv.config({ path: ".env" });
 
-// Controllers (route handlers)
-import * as homeController from "./controllers/home";
-import * as userController from "./controllers/user";
-import * as apiController from "./controllers/api";
-import * as contactController from "./controllers/contact";
-
-
 // API keys and Passport configuration
 import * as passportConfig from "./config/passport";
 
@@ -98,7 +91,6 @@ app.use(
  * Primary app routes.
  */
 app.use("/", primaryRouter);
-
 app.use("/api", apiRouter);
 
 

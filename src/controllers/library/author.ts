@@ -1,4 +1,4 @@
-import { default as Author, AuthorModel } from "../../models/library/author";
+import { default as Author, AuthorModel } from "../../models/library/Author";
 import { Request, Response, NextFunction } from "express";
 const async = require("async");
 
@@ -16,6 +16,11 @@ export const author_list = (req: Request, res: Response, next: NextFunction) => 
         author_list: list_authors
       });
     });
+};
+
+
+export const author_detail = (req: Request, res: Response) => {
+  res.send("NOT IMPLEMENTED: Author detail " + req.params.id);
 };
 
 // // Display detail page for a specific Author.
