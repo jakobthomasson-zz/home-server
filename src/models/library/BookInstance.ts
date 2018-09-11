@@ -6,6 +6,8 @@ export type BookInstanceModel = mongoose.Document & {
   imprint: string,
   status: Date,
   due_back: Date,
+  url: string,
+  due_back_formatted: string
 };
 
 
@@ -34,5 +36,5 @@ bookInstanceSchema
 
 
 // Export model
-const BookInstance = mongoose.model("BookInstance", bookInstanceSchema);
+const BookInstance = mongoose.model<BookInstanceModel>("BookInstance", bookInstanceSchema);
 export default BookInstance;

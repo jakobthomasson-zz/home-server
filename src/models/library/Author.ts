@@ -6,6 +6,7 @@ export type AuthorModel = mongoose.Document & {
   family_name: string,
   date_of_birth: Date,
   date_of_death: Date,
+  url: string,
 };
 
 const authorSchema = new mongoose.Schema(
@@ -39,5 +40,5 @@ authorSchema
   });
 
 // Export model
-const Author = mongoose.model("Author", authorSchema);
+const Author = mongoose.model<AuthorModel>("Author", authorSchema);
 export default Author;

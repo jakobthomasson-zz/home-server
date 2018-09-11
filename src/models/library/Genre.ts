@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 
 export type GenreModel = mongoose.Document & {
   name: string;
+  url?: string;
+  checked?: boolean;
 };
 
 const genreSchema = new mongoose.Schema({
@@ -14,5 +16,6 @@ genreSchema.virtual("url").get(function () {
 });
 
 // Export model
-const Genre = mongoose.model("Genre", genreSchema);
+const Genre = mongoose.model<GenreModel>("Genre", genreSchema);
+
 export default Genre;

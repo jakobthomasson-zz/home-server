@@ -1,11 +1,13 @@
 import mongoose from "mongoose";
 import { AuthorModel } from "./Author";
+import { GenreModel } from "./Genre";
 export type BookModel = mongoose.Document & {
   title: string,
   summary: string,
   isbn: string,
   author: AuthorModel, // TODO: vet inte hur denna ska va
-  genre: any, // TODO: hur?
+  genre: GenreModel[], // TODO: hur?
+  url: string
 };
 
 const bookSchema = new mongoose.Schema(
@@ -26,5 +28,5 @@ bookSchema
   });
 
 // Export model
-const Book = mongoose.model("Book", bookSchema);
+const Book = mongoose.model<BookModel>("Book", bookSchema);
 export default Book;
