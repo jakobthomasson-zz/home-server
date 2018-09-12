@@ -28,7 +28,6 @@ export const index = (req: Request, res: Response) => {
       },
     },
     (err: any, result: any) => {
-      console.log(result);
       res.render("api/library/index", { title: "Local Library Home", error: err, data: result });
     });
 };
@@ -180,11 +179,115 @@ export const book_delete_post = (req: Request, res: Response) => {
 };
 
 // Display book update form on GET.
-export const book_update_get = (req: Request, res: Response) => {
-  res.send("NOT IMPLEMENTED: Book update GET");
+export const book_update_get = (req: Request, res: Response, next: NextFunction) => {
+  // Get book, authors and genres for form.
+  async.parallel({
+    book: (callback: ApiHelper.Callback<BookModel>) => {
+      Book.findById(req.params.id).populate("author").populate("genre").exec(callback);
+    },
+    authors: (callback: ApiHelper.Callback<AuthorModel[]>) => {
+      Author.find(callback);
+    },
+    genres: (callback: ApiHelper.Callback<GenreModel[]>) => {
+      Genre.find(callback);
+    },
+  }, (err: any, result: { book: BookModel, authors: AuthorModel[], genres: GenreModel[] }) => {
+    if (err) { return next(err); }
+    if (result.book == undefined) { // No results.
+      err = new Error("Book not found");
+      err.status = 404;
+      return next(err);
+    }
+    // Success.
+    // Mark our selected genres as checked.
+    for (let all_g_iter = 0; all_g_iter < result.genres.length; all_g_iter++) {
+      for (let book_g_iter = 0; book_g_iter < result.book.genre.length; book_g_iter++) {
+        if (result.genres[all_g_iter]._id.toString() == result.book.genre[book_g_iter]._id.toString()) {
+          result.genres[all_g_iter].checked = true;
+        }
+      }
+    }
+    res.render("api/library/book_form", { title: "Update Book", ...result });
+  });
+
 };
 
 // Handle book update on POST.
-export const book_update_post = (req: Request, res: Response) => {
-  res.send("NOT IMPLEMENTED: Book update POST");
-};
+export const book_update_post = [
+
+  // Convert the genre to an array
+  (req: Request, res: Response, next: NextFunction) => {
+    if (!(req.body.genre instanceof Array)) {
+      if (typeof req.body.genre === "undefined")
+        req.body.genre = [];
+      else
+        req.body.genre = new Array(req.body.genre);
+    }
+    next();
+  },
+
+  // Validate fields.
+  body("title", "Title must not be empty.").isLength({ min: 1 }).trim(),
+  body("author", "Author must not be empty.").isLength({ min: 1 }).trim(),
+  body("summary", "Summary must not be empty.").isLength({ min: 1 }).trim(),
+  body("isbn", "ISBN must not be empty").isLength({ min: 1 }).trim(),
+
+  // Sanitize fields.
+  sanitizeBody("title").trim().escape(),
+  sanitizeBody("author").trim().escape(),
+  sanitizeBody("summary").trim().escape(),
+  sanitizeBody("isbn").trim().escape(),
+  sanitizeBody("genre.*").trim().escape(),
+
+  // Process request after validation and sanitization.
+  (req: Request, res: Response, next: NextFunction) => {
+
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create a Book object with escaped/trimmed data and old id.
+    const book = new Book(
+      {
+        title: req.body.title,
+        author: req.body.author,
+        summary: req.body.summary,
+        isbn: req.body.isbn,
+        genre: (typeof req.body.genre === "undefined") ? [] : req.body.genre,
+        _id: req.params.id // This is required, or a new ID will be assigned!
+      });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+
+      // Get all authors and genres for form.
+      async.parallel({
+        authors: (callback: ApiHelper.Callback<AuthorModel[]>) => {
+          Author.find(callback);
+        },
+        genres: (callback: ApiHelper.Callback<GenreModel[]>) => {
+          Genre.find(callback);
+        },
+      }, (err: any, result: { authors: AuthorModel[], genres: GenreModel[] }) => {
+
+        if (err) { return next(err); }
+
+        // Mark our selected genres as checked.
+        for (let i = 0; i < result.genres.length; i++) {
+          if (book.genre.indexOf(result.genres[i]._id) > -1) {
+            result.genres[i].checked = true;
+          }
+        }
+        res.render("api/library/book_form", { title: "Update Book", authors: result.authors, genres: result.genres, book: book, errors: errors.array() });
+      });
+      return;
+    }
+    else {
+      // Data from form is valid. Update the record.
+      Book.findByIdAndUpdate(req.params.id, book, {}, function (err, thebook) {
+        if (err) { return next(err); }
+        // Successful - redirect to book detail page.
+        res.redirect(thebook.url);
+      });
+    }
+  }
+];

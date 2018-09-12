@@ -127,21 +127,21 @@ export const author_delete_get = (req: Request, res: Response, next: NextFunctio
     author: (callback: ApiHelper.Callback<AuthorModel>) => {
       Author.findById(req.params.id).exec(callback);
     },
-    authors_books: (callback: ApiHelper.Callback<BookModel[]>) => {
+    author_books: (callback: ApiHelper.Callback<BookModel[]>) => {
       Book.find({ "author": req.params.id }).exec(callback);
     },
-  }, (err: any, result: { author: AuthorModel, authors_books: BookModel[] }) => {
+  }, (err: any, result: { author: AuthorModel, author_books: BookModel[] }) => {
     if (err) { return next(err); }
     if (result.author == undefined) { // No results.
       res.redirect("/api/library/authors");
     }
     // Successful, so render.
-    res.render("/api/library/author_delete", { title: "Delete Author", ...result });
+    res.render("api/library/author_delete", { title: "Delete Author", ...result });
   });
 };
 
 // Handle Author delete on POST.
-export const author_delete_post = function (req: Request, res: Response, next: NextFunction) {
+export const author_delete_post = (req: Request, res: Response, next: NextFunction) => {
 
   async.parallel({
     author: (callback: ApiHelper.Callback<AuthorModel>) => {
@@ -150,7 +150,7 @@ export const author_delete_post = function (req: Request, res: Response, next: N
     authors_books: (callback: ApiHelper.Callback<BookModel[]>) => {
       Book.find({ "author": req.body.authorid }).exec(callback);
     },
-  }, (err: any, result: { author: AuthorModel, authors_books: BookModel[]}) => {
+  }, (err: any, result: { author: AuthorModel, authors_books: BookModel[] }) => {
     if (err) { return next(err); }
     // Success
     if (result.authors_books.length > 0) {
